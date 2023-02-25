@@ -1,0 +1,86 @@
+Given an undirected connected graph of n vertices and list of m edges in a graph and for each pair of vertices that are connected by an edge. 
+
+There are two edges between them, one curved edge and one straight edge i.e. the tuple (x, y, w1, w2) means that between vertices x and y, there is a straight edge with weight w1 and a curved edge with weight w2.
+
+You are given two vertices a and b and you have to go from a to b through a series of edges such that in the entire path you can use at most 1 curved edge. Your task is to find the shortest path from a to b satisfying the above condition. If there is no path from a to b, return -1.
+
+ 
+
+Example 1:
+
+Input:
+n = 4, m = 4
+a = 2, b = 4
+edges = {{1, 2, 1, 4}, {1, 3, 2, 4},
+         {1, 4, 3, 1}, {2, 4, 6, 5}}
+Output:
+2
+
+
+Code:
+
+class Solution {
+  public:
+  
+  vector<int> dijkstra(int u, int b, int n, vector<pair<int,int>> adj[]) {
+        vector<int> distance;
+        distance.assign(n+1, 1000000001);
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+        distance[u] = 0;
+        pq.push({0, u});
+     
+        while(!pq.empty()) {
+            int u = pq.top().second;
+            pq.pop();
+    
+            for(auto p: adj[u]) {
+                  int v = p.first;
+                  int w = p.second;
+                  if(distance[v] > distance[u] + w) {
+                        distance[v] = distance[u] + w;
+                        pq.push({distance[v], v});
+                  }
+            }
+        }
+        return distance;
+    }
+
+    int shortestPath(int n, int m, int a, int b, vector<vector<int>> &edges) {
+        
+        
+        vector<pair<int,int>> adj[n+1];
+        vector<vector<int>> curved;
+        
+        for(int i=0; i<m; i++)
+        {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int w = edges[i][2];
+            int x = edges[i][3];
+            
+            adj[u].push_back({v, w});
+            adj[v].push_back({u, w});
+        
+            curved.push_back({u, v, x});
+        }
+        
+        vector<int> da = dijkstra(a, b, n, adj);
+        vector<int> db = dijkstra(b, a, n, adj);
+        
+        int ans = da[b];
+    
+        for(int i=0; i<m; i++)
+        {
+            int u = curved[i][0];
+            int v = curved[i][1];
+            int x = curved[i][2];
+    
+            ans = min(ans, da[u] + x + db[v]);
+            ans = min(ans, da[v] + x + db[u]);
+        }
+        
+        if(ans>=1000000001) return -1;
+        return ans;
+    }
+    
+};

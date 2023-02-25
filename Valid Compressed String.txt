@@ -1,0 +1,62 @@
+A special compression mechanism can arbitrarily delete 0 or more characters and replace them with the deleted character count.
+Given two strings, S and T where S is a normal string and T is a compressed string, determine if the compressed string  T is valid for the plaintext string S. 
+
+
+Example 1:
+
+Input:
+S = "GEEKSFORGEEKS"
+T = "G7G3S"
+Output:
+1
+Explanation:
+We can clearly see that T is a valid 
+compressed string for S.
+
+Code: 
+
+class Solution {
+  public:
+    int checkCompressed(string S, string T) {
+        // code here
+        int n=0;
+        int j=0;
+        int flag=1;
+        for(int i=0;i<T.length();i++)
+        {
+            if(T[i]>='0' && T[i]<='9')
+            {
+                n*=10;
+                if(n>100000)
+                {
+                    return 0;
+                }
+                n+=T[i]-'0';
+                j--;
+            }
+            
+            else
+            {
+                j+=n;
+                if(T[i]!=S[j])
+                {
+                    flag=0;
+                    break;
+                }
+                n=0;
+            }
+            j++;
+        }
+        j+=n;
+        
+        if(j!=S.length()){
+            flag=0;
+        }
+        if(flag){
+            return 1;
+        }
+        else
+            return 0;
+        
+    }
+};
